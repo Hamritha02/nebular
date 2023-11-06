@@ -1,11 +1,8 @@
 name: Deploy docs
 on:
-  push:
-    branches:
+  workflow_dispatch
    #   - master
-  release:
-    types:
-      - published
+  
 jobs:
   deploy-docs:
     runs-on: ubuntu-latest
