@@ -1,4 +1,4 @@
-name: Code junction build
+name: nebular
 on: 
   push: 
     branches: 
