@@ -75,14 +75,7 @@ jobs:
     #         package.json
     
    
-    - name: Generate SPDX SBOM
-      run: npx spdx-generator --output sbom.spdx  # Adjust the command according to your SPDX tool and configuration
-
-    - name: Upload SPDX SBOM report
-      uses: actions/upload-artifact@v2
-      with:
-          name: "spdx-sbom-${{ github.run_number }}"
-          path: sbom.spdx
+    
   Docker_push:
     needs : build_and_test
     runs-on: ubuntu-latest
