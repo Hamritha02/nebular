@@ -53,7 +53,7 @@ jobs:
 
     - name: Run Snyk Test
       run: snyk test --all-projects
-      continue-on-error : true
+      continue-on-error: true
         
     - name: Check Snyk Test Results
       run: |
@@ -74,19 +74,7 @@ jobs:
             dist
             package.json
     
-    - name: Install OWASP Dependency-Check
-      run: |
-          wget https://dl.bintray.com/jeremy-long/owasp/dependency-check-6.3.2-release.zip
-          unzip dependency-check-6.3.2-release.zip -d /opt
-      
-    - name: Generate SBOM
-      run: /opt/dependency-check/bin/dependency-check.sh --project "My Project" --scan . --format ALL
-
-    - name: Store SBOM as Artifact
-      uses: actions/upload-artifact@v2
-      with:
-          name: sbom
-          path: dependency-check-report
+   
   
   Docker_push:
     needs : build_and_test
