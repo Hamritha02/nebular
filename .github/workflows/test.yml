@@ -87,6 +87,19 @@ jobs:
           password: ${{ secrets.DOCKER_TOKEN }}
     - name: Build Container image
       run: docker build -t ${{ secrets.DOCKER_REPO }}:${{ github.run_number }} .
+
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+          image-ref: '${{ secrets.DOCKER_REPO }}:${{ github.run_number }}'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+
+    - name: Upload Trivy scan results to GitHub Security tab
+      uses: github/codeql-action/upload-sarif@v2
+      with:
+          sarif_file: 'trivy-results.sarif'
+    
     - name: Publish Docker image
       run: docker push ${{ secrets.DOCKER_REPO }}:${{ github.run_number }}
   Deploy:
