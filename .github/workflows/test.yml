@@ -74,15 +74,19 @@ jobs:
             dist
             package.json
     
-    - name: SBOM
-      uses: advanced-security/sbom-generator-action@v0.0.1
-      id: sbom
-          
-    - name: upload SBOM report
-      uses: actions/upload-artifact@v3.1.0
-      with: 
-         path: ${{steps.sbom.outputs.fileName }}
-         name: "SBOM"
+    - name: Install OWASP Dependency-Check
+      run: |
+          wget https://dl.bintray.com/jeremy-long/owasp/dependency-check-6.3.2-release.zip
+          unzip dependency-check-6.3.2-release.zip -d /opt
+      
+    - name: Generate SBOM
+      run: /opt/dependency-check/bin/dependency-check.sh --project "My Project" --scan . --format ALL
+
+    - name: Store SBOM as Artifact
+      uses: actions/upload-artifact@v2
+      with:
+          name: sbom
+          path: dependency-check-report
   
   Docker_push:
     needs : build_and_test
