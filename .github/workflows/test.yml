@@ -75,19 +75,14 @@ jobs:
     #         package.json
     
    
-    - name: Install OWASP Dependency-Check
-      run: |
-          wget https://dl.bintray.com/jeremy-long/owasp/dependency-check-6.3.2-release/dependency-check-6.3.2-release.zip
-          unzip dependency-check-6.3.2-release.zip -d /opt
-      
-    - name: Generate SBOM
-      run: /opt/dependency-check/bin/dependency-check.sh --project "My Project" --scan . --format ALL
+    - name: Generate SPDX SBOM
+      run: npx spdx-generator --output sbom.spdx  # Adjust the command according to your SPDX tool and configuration
 
-    - name: Store SBOM as Artifact
+    - name: Upload SPDX SBOM report
       uses: actions/upload-artifact@v2
       with:
-          name: sbom
-          path: dependency-check-report
+          name: "spdx-sbom-${{ github.run_number }}"
+          path: sbom.spdx
   Docker_push:
     needs : build_and_test
     runs-on: ubuntu-latest
