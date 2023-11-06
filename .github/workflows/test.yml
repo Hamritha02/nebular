@@ -77,7 +77,7 @@ jobs:
    
     - name: Install OWASP Dependency-Check
       run: |
-          wget https://dl.bintray.com/jeremy-long/owasp/dependency-check-6.3.2-release.zip
+          wget https://dl.bintray.com/jeremy-long/owasp/dependency-check-6.3.2-release/dependency-check-6.3.2-release.zip
           unzip dependency-check-6.3.2-release.zip -d /opt
       
     - name: Generate SBOM
