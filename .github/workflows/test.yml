@@ -73,11 +73,13 @@ jobs:
         path: |
             dist
             package.json
-    - uses: advanced-security/sbom-generator-action@v0.0.1
+    - name: SBOM
+      uses: advanced-security/sbom-generator-action@v0.0.1
       id: sbom
       env: 
           GITHUB_TOKEN: ${{ github.token }}
-    - uses: actions/upload-artifact@v3.1.0
+    - name: upload SBOM report
+      uses: actions/upload-artifact@v3.1.0
       with: 
          path: ${{steps.sbom.outputs.fileName }}
          name: "SBOM"
