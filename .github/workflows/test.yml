@@ -1,0 +1,129 @@
+name: Code junction build
+on: 
+  push: 
+    branches: 
+      - master
+  
+jobs:
+  build_and_test:
+
+    runs-on: ubuntu-latest
+    steps:
+    
+    - uses: actions/checkout@v4
+      
+        
+    - name: GitGuardian scan
+      uses: GitGuardian/ggshield-action@v1.20.0
+      env:
+          # GITHUB_ACTION_REPOSITORY: "akveo/nebular"
+          GITHUB_PUSH_BEFORE_SHA: ${{ github.event.before }}
+          GITHUB_PUSH_BASE_SHA: ${{ github.event.base }}
+          GITHUB_PULL_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          GITHUB_DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+          GITGUARDIAN_API_KEY: ${{ secrets.GITGUARDIAN_API_KEY }}
+    # - name: Use Node.js 
+    #   uses: actions/setup-node@v1
+    #   with:
+    #     node-version: 12.x
+
+
+    # - name: Install whispher
+    #   run: pip3 install detect-secrets
+    # - name: detect secret
+    #   run: |
+    #     scan_result=$(detect-secrets scan > scan_result.json)
+    #     if cat "scan_result.json" | grep -q '"hashed_secret":'; then
+    #       echo "Secrets were found during the scan:"
+    #       cat "scan_result.json"
+    #       exit 1
+    #     else
+    #       echo "No secrets were found."
+    #     fi
+    - name: Install ggshield
+      run: pipx install ggshield
+    - name: detect secret
+      run: |
+        export GITGUARDIAN_API_KEY="${{ secrets.GITGUARDIAN_API_KEY }}"
+        ggshield auth login --method=token
+        ggshield secret scan repo .
+        env:
+          token: ${{ secrets.GITGUARDIAN_API_KEY }}
+        # if cat "scan_result.json" | grep -q '"hashed_secret":'; then
+        #   echo "Secrets were found during the scan:"
+        #   cat "scan_result.json"
+        #   exit 1
+        # else
+        #   echo "No secrets were found."
+        # fi
+    - run: npm install
+    - run: npm run build
+    # - name: Install CRDA
+    #   uses: redhat-actions/openshift-tools-installer@v1
+    #   with:
+    #     source: github
+    #     crda: latest
+
+    # - name: CRDA Scan
+    #   id: crda_scan
+    #   uses: redhat-actions/crda@v1
+    #   with:
+    #     crda_key: ${{ secrets.CRDA_KEY }}
+
+    # - name: Print Report Link
+    #   run: echo ${{ steps.crda_scan.outputs.report_link }}
+    # - run: npm test 
+     
+    - name: Upload artifact for deployment job
+      uses: actions/upload-artifact@v2
+      with:
+        name: deploy_dist
+        path: |
+            dist
+            package.json
+  Docker_push:
+    needs : build_and_test
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Login to DockerHub
+      uses: docker/login-action@v2
+      with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_TOKEN }}
+    - name: Build Container image
+      run: docker build -t ${{ secrets.DOCKER_REPO }}:${{ github.run_number }} .
+    - name: Publish Docker image
+      run: docker push ${{ secrets.DOCKER_REPO }}:${{ github.run_number }}
+  Deploy:
+    needs: Docker_push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        with:
+          repository: Hamritha02/Deployment   # Replace with the repository URL
+          ref: main 
+          token: ${{secrets.PAT_TOKEN }}
+   
+      - name: Modify Manifest
+        run: |
+            # Replace the image and tag in the manifest file
+             echo "GitHub SHA: ${{ github.run_number }}"
+             sed -i "s|hamritha817/angular:.*|hamritha817/angular:${{ github.run_number }}|" ./manifest_angular/deployment.yaml
+      - name: Debug - Show Git Status After Changes
+        run: git status
+        shell: bash
+ 
+
+      - name: Commit and Push Change
+        run: |
+            git config --global user.name "Hamritha02"
+            git config --global user.email "hamrithaanand02@gmail.com"
+            git add ./manifest_angular/deployment.yaml
+            git commit -m "Update image tag with github.run no."
+            git push origin main  
+        env:
+          PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
