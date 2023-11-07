@@ -10,11 +10,9 @@ COPY package*.json ./
 # Install project dependencies
 RUN npm install
 
+FROM nginx:alpine
 # Copy the rest of your application code to the container
-COPY . .
+COPY ./dist/playground /usr/share/nginx/html/
 
 # Expose a port (if your app runs a server)
-EXPOSE 3000
-
-# Start your application
-CMD ["npm", "start"]
+EXPOSE 80
