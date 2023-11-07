@@ -1,0 +1,26 @@
+name: nebular
+on: 
+   workflow_call:
+  
+jobs:
+  build_and_test:
+      runs-on: ubuntu-latest
+      steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Use Node.js 
+        uses: actions/setup-node@v1
+        with:
+          node-version: 11.x
+      - name: Generate SBOM
+        run: |
+          curl -Lo $RUNNER_TEMP/sbom-tool https://github.com/microsoft/sbom-tool/releases/latest/download/sbom-tool-linux-x64
+          chmod +x $RUNNER_TEMP/sbom-tool
+          $RUNNER_TEMP/sbom-tool generate -b . -bc . -pn Hamritha02/nebular -pv 1.0.0 -ps OwnerName -nsb https://sbom.mycompany.com -V Verbose
+
+      - name: Upload SBOM Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: sbom
+          path: _manifest/spdx_2.2
