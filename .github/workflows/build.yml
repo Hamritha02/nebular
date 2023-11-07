@@ -3,6 +3,7 @@ on:
   push: 
     branches: 
       - master
+  workflow_call:
   
 jobs:
   build_and_test:
