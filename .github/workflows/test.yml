@@ -114,11 +114,11 @@ jobs:
     
     - name: Publish Docker image
       run: docker push ${{ secrets.DOCKER_REPO }}:${{ github.run_number }}
-  Deploy:
-    # needs: Docker_push
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repository
+  # Deploy:
+  #   # needs: Docker_push
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout Repository
         uses: actions/checkout@v3
         with:
           repository: Hamritha02/Deployment   # Replace with the repository URL
