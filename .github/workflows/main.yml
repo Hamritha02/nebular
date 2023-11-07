@@ -11,27 +11,30 @@ jobs:
       uses: ./.github/workflows/build.yml
       secrets: inherit
   
-  # security_scan:
-  #     name: GGshield
-  #     uses: ./.github/workflows/ggshield.yml
-  #     secrets: inherit
-  #   #   continue-on-error: true 
-  # Snyk:
-  #     name: Snyk
-  #     uses: ./.github/workflows/snyk.yml
-  #     secrets: inherit
-  # SBOM:
-  #     name: SBOM
-  #     uses: ./.github/workflows/sbom.yml
-  #     secrets: inherit
-  # Docker_build_push:
-  #     name: docker
-  #     uses: ./.github/workflows/docker.yml
-  #     secrets: inherit
-  # Deployment:
-  #     name: deployment
-  #     uses: ./.github/workflows/deploy.yml
-  #     secrets: inherit
+  security_scan:
+      name: GGshield
+      uses: ./.github/workflows/ggshield.yml
+      secrets: inherit
+      
+  Snyk:
+      name: Snyk
+      uses: ./.github/workflows/snyk.yml
+      secrets: inherit
+  
+  SBOM:
+      name: SBOM
+      uses: ./.github/workflows/sbom.yml
+      secrets: inherit
+ 
+  Docker_build_push:
+      name: docker
+      uses: ./.github/workflows/docker.yml
+      secrets: inherit
+  
+  Deployment:
+      name: deployment
+      uses: ./.github/workflows/deploy.yml
+      secrets: inherit
   #   # - name: GitGuardian scan
   #   #   uses: GitGuardian/ggshield-action@v1.20.0
   #   #   env:
