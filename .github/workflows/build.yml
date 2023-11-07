@@ -23,8 +23,10 @@ jobs:
       - name: Npm build
         run: npm run build
         
-      - name: Npm test
-        run: npm test
+      - name: Npm test package
+        run: npm test:packages
+      - name: Npm code coverage
+        run: test:wp
   
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v2
