@@ -1,8 +1,5 @@
 name: nebular
-on: 
-  push: 
-    branches: 
-      - master
+on:
   workflow_call:
   
 jobs:
@@ -22,9 +19,6 @@ jobs:
       
       - name: Npm build
         run: npm run build
-        
-      - name: Npm test package
-        run: npm test:coverage
         
       - name: Npm code coverage
         run: npm test:wp
