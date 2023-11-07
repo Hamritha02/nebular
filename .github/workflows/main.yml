@@ -6,16 +6,19 @@ on:
   
 jobs:
   build_and_test:
-
-    runs-on: ubuntu-latest
-    steps:
-    
-    - uses: actions/checkout@v4
-        
+      name: build
+      uses: ./.github/workflows/build.yml
+      secrets: inherit
+  
+  security_scan:
+      name: GGshield
+      uses: ./.github/workflows/ggshield.yml
+      secrets: inherit
+    #   continue-on-error: true 
+      
     # - name: GitGuardian scan
     #   uses: GitGuardian/ggshield-action@v1.20.0
     #   env:
-    #       # GITHUB_ACTION_REPOSITORY: "akveo/nebular"
     #       GITHUB_PUSH_BEFORE_SHA: ${{ github.event.before }}
     #       GITHUB_PUSH_BASE_SHA: ${{ github.event.base }}
     #       GITHUB_PULL_BASE_SHA: ${{ github.event.pull_request.base.sha }}
