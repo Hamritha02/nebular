@@ -10,7 +10,7 @@ COPY package*.json ./
 # Install project dependencies
 RUN npm install
 
-FROM nginx:alpine
+FROM nginx:1.29.3-alpine3.22
 # Copy the rest of your application code to the container
 COPY ./dist/playground /usr/share/nginx/html/
 
